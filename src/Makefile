@@ -13,6 +13,7 @@ TESTS_DIR = ./tests
 REPORT_DIR = ./report
 DVI_DIR = ../docs
 INCLUDE_DIR = ./include
+DEBUG_DIR = ./debug
 #=============================================================================#
 
 # TARGET NAMES ===============================================================#
@@ -36,12 +37,18 @@ TESTS_O = $(notdir $(TESTS_CC:%.cc=%.o))
 TESTS_OBJ_PATH = $(addprefix $(OBJ_DIR)/tests/, $(TESTS_O))
 #=============================================================================#
 
+# LIST OF FILES AND DIRECTORIES IN DEBUG =====================================#
+DEBUG_CC = $(shell find $(DEBUG_DIR) -type f -name "*.cc")
+DEBUG_H = $(shell find $(DEBUG_DIR) -type f -name "*.h")
+DEBUG_O = $(notdir $(DEBUG_CC:%.cc=%.o))
+DEBUG_OBJ_PATH = $(addprefix $(OBJ_DIR)/debug/, $(DEBUG_O))
+
 # LIST OF FILES TO CLANG-FORMAT AND CPPCHECK =================================#
 CC_FILES = $(MODULES_CC)
 H_FILES = $(MODULES_H)
 #=============================================================================#
 
-vpath %.cc $(MODULES_DIRS) $(TESTS_DIRS)
+vpath %.cc $(MODULES_DIRS) $(TESTS_DIRS) $(DEBUG_DIR)
 vpath %.o $(OBJ_DIR)
 
 # TARGETS ====================================================================#
@@ -54,31 +61,19 @@ $(LIB): $(OBJ_DIR) $(MODULES_O) $(MODULES_H)
 	ranlib $@
 
 .PHONY: $(TARGET)
-$(TARGET): $(LIB) $(OBJ_DIR) $(TESTS_O)
-	$(CXX) $(TESTS_OBJ_PATH) $(LIB) $(LDFLAGS) -o $@
+$(TARGET): $(LIB) $(OBJ_DIR) $(TESTS_O) $(DEBUG_O)
+	$(CXX) $(TESTS_OBJ_PATH) $(LIB) $(LDFLAGS) $(DEBUG_OBJ_PATH) -o $@
 	./$@
 
-%_test.o: %_test.cc
+%_debug.o: %_debug.cc $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $(addprefix $(OBJ_DIR)/debug/, $@) $<
+
+%_test.o: %_test.cc $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $(addprefix $(OBJ_DIR)/tests/, $@) $<
 
-%.o: %.cc $(MODULES_H)
+%.o: %.cc $(MODULES_H) $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $(addprefix $(OBJ_DIR)/modules/, $@) $<
-
-
 #=============================================================================#
-
-1:
-	@echo $(H_FILES)
-	@echo
-	@echo $(MODULES_H)
-	@echo
-	@echo $(TESTS_H)
-	@echo
-	@echo $(TESTS_O)
-	@echo
-	@echo $(TESTS_OBJ_PATH)
-# .PHONY $(TARGET)
-# $(TARGET):
 
 clang_fix:
 	clang-format -style=Google -i $(CC_FILES) $(H_FILES)
@@ -102,8 +97,10 @@ preferences:
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)/tests/
 	mkdir -p $(OBJ_DIR)/modules/
+	mkdir -p $(OBJ_DIR)/debug/
 
 # .PHONY $(DVI_DIR)
 $(DVI_DIR):
 	mkdir -p $(DVI_DIR)
+
 #=============================================================================#
