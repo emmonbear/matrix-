@@ -6,6 +6,11 @@ CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -g
 LDFLAGS = -lgtest
 #=============================================================================#
 
+# ADDITIONAL FLAGS ===========================================================#
+GCOV_FLAGS = -fprofile-arcs -ftest-coverage
+VALGRIND_FLAGS = --tool=memcheck --leak-check=yes
+VALGRIND_REPORT = val.txt
+
 # DIRECTORIES ================================================================#
 OBJ_DIR = ./obj
 MODULES_DIR = ./modules
@@ -18,7 +23,8 @@ DEBUG_DIR = ./debug
 
 # TARGET NAMES ===============================================================#
 TARGET = test
-LIB = $(PROJECT_NAME).a 
+LIB = $(PROJECT_NAME).a
+GCOV = gcov_report
 #=============================================================================#
 
 # LIST OF FILES AND DIRECTORIES IN MODULES ===================================#
@@ -65,6 +71,13 @@ $(TARGET): $(LIB) $(OBJ_DIR) $(TESTS_O) $(DEBUG_O)
 	$(CXX) $(TESTS_OBJ_PATH) $(LIB) $(LDFLAGS) $(DEBUG_OBJ_PATH) -o $@
 	./$@
 
+.PHONE: $(GCOV)
+$(GCOV): $(OBJ_DIR) $(REPORT_DIR) $(TESTS_O) $(DEBUG_O)
+	$(CXX) $(TESTS_OBJ_PATH) $(DEBUG_OBJ_PATH) $(MODULES_CC) $(LDFLAGS) $(GCOV_FLAGS) -o $(addprefix $(OBJ_DIR)/, $(TARGET))
+	-./$(addprefix $(OBJ_DIR)/, $(TARGET))
+	gcovr -r . --html --html-details -o $(REPORT_DIR)/coverage.html
+	xdg-open $(REPORT_DIR)/coverage.html
+
 %_debug.o: %_debug.cc $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $(addprefix $(OBJ_DIR)/debug/, $@) $<
 
@@ -73,8 +86,8 @@ $(TARGET): $(LIB) $(OBJ_DIR) $(TESTS_O) $(DEBUG_O)
 
 %.o: %.cc $(MODULES_H) $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $(addprefix $(OBJ_DIR)/modules/, $@) $<
-#=============================================================================#
 
+# CHECKS =====================================================================#
 clang_fix:
 	clang-format -style=Google -i $(CC_FILES) $(H_FILES)
 
@@ -84,10 +97,34 @@ clang_check:
 cpplint:
 	cpplint $(CC_FILES) $(H_FILES)
 
+valgrind: $(TARGET)
+	@printf '\033[1;33m\n\t\t\t\t                   _            _           _   _            _   _             \n'
+	@printf '\t\t\t\t                  | |          (_)         | | | |          | | (_)            \n'
+	@printf '\t\t\t\t       __   ____ _| | __ _ _ __ _ _ __   __| | | |_ ___  ___| |_ _ _ __   __ _ \n'
+	@printf '\t\t\t\t       \ \ / / _` | |/ _` | '\''__| | '\''_ \ / _` | | __/ _ \/ __| __| | '\''_ \ / _` |\n'
+	@printf '\t\t\t\t        \ V / (_| | | (_| | |  | | | | | (_| | | ||  __/\__ \ |_| | | | | (_| |\n'
+	@printf '\t\t\t\t         \_/ \__,_|_|\__, |_|  |_|_| |_|\__,_|  \__\___||___/\__|_|_| |_|\__, |\n'
+	@printf '\t\t\t\t                      __/ |                                               __/ |\n'
+	@printf '\t\t\t\t                     |___/                                               |___/ \n\033[0m\n'
+
+	@$@ $(VALGRIND_FLAGS) ./$(TARGET) > $(VALGRIND_REPORT) 2>&1 && \
+	{ \
+		printf "\033[1;33m\n"; \
+		printf "###########################################################################################################################################################\n\n"; \
+		printf "                                                                 Valgrind test results:\n"; \
+		printf "                                                                Passed tests $$(grep "ERROR SUMMARY: 0" -c val.txt) from $$(grep "ERROR SUMMARY:" -c val.txt)\n\n"; \
+		printf "###########################################################################################################################################################\n"; \
+		printf "\033[0m\n"; \
+	}
+
+#=============================================================================#
 clean:
 	rm -f $(TARGET)
 	rm -f $(LIB)
 	rm -rf $(OBJ_DIR)
+	rm -rf $(REPORT_DIR)
+	rm -f $(VALGRIND_REPORT)
+
 .PHONY: preferences
 preferences:
 	sudo apt install libgtest-dev
@@ -103,4 +140,6 @@ $(OBJ_DIR):
 $(DVI_DIR):
 	mkdir -p $(DVI_DIR)
 
+$(REPORT_DIR):
+	mkdir -p $(REPORT_DIR)
 #=============================================================================#
