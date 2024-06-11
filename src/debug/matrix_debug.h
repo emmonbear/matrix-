@@ -15,7 +15,8 @@
 #include "../include/matrix.h"
 
 namespace debug {
-  void PrintMatrix(const S21Matrix& matrix);
+  void PrintMatrix(const char *name, const S21Matrix& matrix);
+  void FillRandom(S21Matrix& matrix);
 }
 
 #endif // SRC_DEBUG_DEBUG_H_
