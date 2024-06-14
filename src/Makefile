@@ -19,6 +19,7 @@ REPORT_DIR = ./report
 DVI_DIR = ../docs
 INCLUDE_DIR = ./include
 DEBUG_DIR = ./debug
+DOCS_DIR = ../docs
 #=============================================================================#
 
 # TARGET NAMES ===============================================================#
@@ -50,7 +51,7 @@ DEBUG_O = $(notdir $(DEBUG_CC:%.cc=%.o))
 DEBUG_OBJ_PATH = $(addprefix $(OBJ_DIR)/debug/, $(DEBUG_O))
 
 # LIST OF FILES TO CLANG-FORMAT AND CPPCHECK =================================#
-CC_FILES = $(MODULES_CC)
+CC_FILES = $(MODULES_CC) $(TESTS_CC)
 H_FILES = $(MODULES_H)
 #=============================================================================#
 
@@ -59,7 +60,7 @@ vpath %.o $(OBJ_DIR)
 
 # TARGETS ====================================================================#
 .PHONY: all
-all: $(LIB)
+all: $(GCOV)
 
 .PHONY: $(LIB)
 $(LIB): $(OBJ_DIR) $(MODULES_O) $(MODULES_H)
@@ -78,6 +79,15 @@ $(GCOV): $(OBJ_DIR) $(REPORT_DIR) $(TESTS_O) $(DEBUG_O)
 	gcovr -r . --html --html-details -o $(REPORT_DIR)/coverage.html
 	xdg-open $(REPORT_DIR)/coverage.html
 
+.PHONY: dvi
+dvi:
+	rm -rf $(DOCS_DIR)
+	doxygen Doxyfile
+
+.PHONY: dvi_open
+dvi_open:
+	xdg-open $(DOCS_DIR)/html/index.html
+
 %_debug.o: %_debug.cc $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c -o $(addprefix $(OBJ_DIR)/debug/, $@) $<
 
@@ -95,7 +105,7 @@ clang_check:
 	clang-format -style=Google -n $(CC_FILES) $(H_FILES)
 
 cpplint:
-	cpplint $(CC_FILES) $(H_FILES)
+	cpplint $(MODULES_CC) $(MODULES_H)
 
 valgrind: $(TARGET)
 	@printf '\033[1;33m\n\t\t\t\t                   _            _           _   _            _   _             \n'
@@ -124,22 +134,24 @@ clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(REPORT_DIR)
 	rm -f $(VALGRIND_REPORT)
+	rm -rf $(DOCS_DIR)
 
 .PHONY: preferences
 preferences:
 	sudo apt install libgtest-dev
 
 #=============================================================================#
-# .PHONY $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)/tests/
 	mkdir -p $(OBJ_DIR)/modules/
 	mkdir -p $(OBJ_DIR)/debug/
 
-# .PHONY $(DVI_DIR)
 $(DVI_DIR):
 	mkdir -p $(DVI_DIR)
 
 $(REPORT_DIR):
 	mkdir -p $(REPORT_DIR)
+
+$(DOCS_DIR):
+	mkdir -p $(DOCS_DIR)
 #=============================================================================#
