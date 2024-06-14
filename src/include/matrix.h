@@ -50,8 +50,10 @@ class S21Matrix {
   S21Matrix operator+=(const S21Matrix& other);
   S21Matrix operator-(const S21Matrix& other) const;
   S21Matrix operator-=(const S21Matrix& other);
-  S21Matrix operator*(const double num) noexcept;
+  S21Matrix operator*(const double num) const noexcept;
   S21Matrix operator*(const S21Matrix& other) const;
+  S21Matrix operator*=(const double num) noexcept;
+  S21Matrix operator*=(const S21Matrix& other) noexcept;
 
   bool EqMatrix(const S21Matrix& other) const;
   void SumMatrix(const S21Matrix& other);

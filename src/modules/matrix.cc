@@ -300,10 +300,12 @@ S21Matrix S21Matrix::operator-=(const S21Matrix& other) {
   return (*this);
 }
 
-S21Matrix S21Matrix::operator*(const double num) noexcept {
-  MulNumber(num);
+S21Matrix S21Matrix::operator*(const double num) const noexcept {
+  S21Matrix tmp{*this};
 
-  return (*this);
+  tmp.MulNumber(num);
+
+  return tmp;
 }
 
 S21Matrix S21Matrix::operator*(const S21Matrix& other) const {
@@ -311,6 +313,16 @@ S21Matrix S21Matrix::operator*(const S21Matrix& other) const {
   res.MulMatrix(other);
 
   return res;
+}
+
+S21Matrix S21Matrix::operator*=(const double num) noexcept {
+  MulNumber(num);
+  return *this;
+}
+
+S21Matrix S21Matrix::operator*=(const S21Matrix& other) noexcept {
+  MulMatrix(other);
+  return *this;
 }
 
 /**
