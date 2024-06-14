@@ -2,7 +2,9 @@
 #include "../main_test.h"
 
 TEST(Operators, AssignmentOperatorTest1) {
-  std::string example{"{{53.194500, -99.057700, -31.281100}, {-46.393200, -15.022800, -70.678500}, {65.970800, -56.264000, 34.949800}}"};
+  std::string example{
+      "{{53.194500, -99.057700, -31.281100}, {-46.393200, -15.022800, "
+      "-70.678500}, {65.970800, -56.264000, 34.949800}}"};
   S21Matrix matrix{example};
   S21Matrix res{};
 
@@ -42,7 +44,7 @@ TEST(Operators, SubAssignmentTest1) {
   S21Matrix matrix_2{expected};
 
   res -= matrix_1;
- 
+
   EXPECT_TRUE(res == matrix_2);
 }
 
@@ -54,7 +56,7 @@ TEST(Operators, MulNumberAssignmentTest1) {
   S21Matrix matrix_2{expected};
 
   res *= 3;
- 
+
   EXPECT_TRUE(res == matrix_2);
 }
 
@@ -67,6 +69,6 @@ TEST(Operators, MulMatrixAssignmentTest1) {
   S21Matrix matrix_2{example_2};
   S21Matrix res{expected};
   matrix_1 *= matrix_2;
-  
+
   EXPECT_TRUE(res == matrix_1);
 }

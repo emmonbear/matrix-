@@ -62,4 +62,3 @@ TEST(MatrixEqual, Test4) {
 
   EXPECT_FALSE(matrix_1 == matrix_2);
 }
-

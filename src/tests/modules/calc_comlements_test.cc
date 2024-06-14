@@ -297,8 +297,9 @@ TEST(CalcComplements, TestNormal11) {
 }
 
 TEST(CalcComplements, TestFail1) {
-  std::string example{"{{47.808300, 57.148700, 48.518100}, {9.230100, -56.311400, 94.235300}}"};
+  std::string example{
+      "{{47.808300, 57.148700, 48.518100}, {9.230100, -56.311400, 94.235300}}"};
   S21Matrix matrix_1{example};
-  
+
   EXPECT_ANY_THROW(matrix_1.CalcComplements(););
 }

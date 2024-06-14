@@ -112,7 +112,7 @@ TEST(Mutator, TestSetColsNormal3) {
 
   matrix_1.set_cols(4);
 
-  #ifdef ENABLE_DEBUG_PRINTS
+#ifdef ENABLE_DEBUG_PRINTS
   MatrixDebug debug;
   debug.UpdateWolframNotation(matrix_1);
   debug.PrintMatrix("matrix_1", matrix_1);
@@ -120,7 +120,7 @@ TEST(Mutator, TestSetColsNormal3) {
   debug.UpdateWolframNotation(matrix_2);
   debug.PrintMatrix("res", matrix_2);
 
-  #endif  // ENABLE_DEBUG_PRINTS
+#endif  // ENABLE_DEBUG_PRINTS
 
   EXPECT_TRUE(matrix_1 == matrix_2);
 }
