@@ -11,10 +11,6 @@
 
 #include "../include/matrix.h"
 
-#include <algorithm>  // std::copy
-#include <iostream>
-#include <string>
-
 /**
  * @brief Default constructor for the S21Matrix class.
  *
@@ -50,6 +46,43 @@ S21Matrix::S21Matrix(int n) : rows_{n}, cols_{n} {
   AllocateMatrix();
 }
 
+void S21Matrix::set_rows(int rows) {
+  if (rows < 0) {
+    throw std::invalid_argument("The number of rows cannot be negative");
+  }
+
+  if (rows != rows_) {
+    S21Matrix tmp{rows, cols_};
+    int min = std::min(rows, rows_);
+
+    for (int i = 0; i < min; i++) {
+      for (int j = 0; j < cols_; j++) {
+        tmp.matrix_[i][j] = matrix_[i][j];
+      }
+    }
+
+    *this = std::move(tmp);
+  }
+}
+
+void S21Matrix::set_cols(int cols) {
+  if (cols < 0) {
+    throw std::invalid_argument("The number of cols cannot be negative");
+  }
+
+  if (cols != cols_) {
+    S21Matrix tmp{rows_, cols};
+    int min = std::min(cols, cols_);
+
+    for (int i = 0; i < rows_; i++) {
+      for (int j = 0; j < min; j++) {
+        tmp.matrix_[i][j] = matrix_[i][j];
+      }
+    }
+
+    *this = std::move(tmp);
+  }
+}
 /**
  * @brief Construct a new S21Matrix object.
  *

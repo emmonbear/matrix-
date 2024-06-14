@@ -12,8 +12,11 @@
 #ifndef SRC_INCLUDE_MATRIX_H_
 #define SRC_INCLUDE_MATRIX_H_
 
+#include <algorithm>  // std::copy
 #include <cmath>
+#include <iostream>
 #include <sstream>
+#include <string>
 
 /// @todo Отсортировать согласно кодстайлу
 class S21Matrix {
@@ -28,6 +31,8 @@ class S21Matrix {
 
   S21Matrix(S21Matrix&& other) noexcept;
 
+  void set_rows(int rows);
+  void set_cols(int cols);
   /// @brief Get the _rows object
   /// @return int rows_
   inline int get_rows() const noexcept { return rows_; }
