@@ -52,7 +52,7 @@ class S21Matrix {
   S21Matrix() noexcept;
   explicit S21Matrix(int n);
   S21Matrix(int n, int m);
-  explicit S21Matrix(std::string src) noexcept;
+  S21Matrix(std::string src) noexcept;
   S21Matrix(const S21Matrix& other);
   S21Matrix(S21Matrix&& other) noexcept;
   S21Matrix& operator=(const S21Matrix& other);
