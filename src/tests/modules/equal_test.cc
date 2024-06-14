@@ -9,7 +9,7 @@ TEST(MatrixEqual, Test1) {
   EXPECT_TRUE(matrix_1 == matrix_2);
 }
 
-TEST(MatrixEqual, 2) {
+TEST(MatrixEqual, Test2) {
   S21Matrix matrix_1(2);
   S21Matrix matrix_2(2);
 
@@ -27,7 +27,7 @@ TEST(MatrixEqual, 2) {
   EXPECT_TRUE(matrix_1 == matrix_2);
 }
 
-TEST(MatrixEqual, 3) {
+TEST(MatrixEqual, Test3) {
   S21Matrix matrix_1(2);
   S21Matrix matrix_2(2);
 
@@ -44,3 +44,22 @@ TEST(MatrixEqual, 3) {
 
   EXPECT_FALSE(matrix_1 == matrix_2);
 }
+
+TEST(MatrixEqual, Test4) {
+  S21Matrix matrix_1(3);
+  S21Matrix matrix_2(2);
+
+  matrix_1(0, 1) = 2;
+  matrix_2(0, 1) = 1;
+
+#ifdef ENABLE_DEBUG_PRINTS
+  MatrixDebug debug;
+  debug.UpdateWolframNotation(matrix_1);
+  debug.PrintMatrix("matrix_1", matrix_1);
+  debug.UpdateWolframNotation(matrix_2);
+  debug.PrintMatrix("matrix_2", matrix_2);
+#endif  // ENABLE_DEBUG_PRINTS
+
+  EXPECT_FALSE(matrix_1 == matrix_2);
+}
+

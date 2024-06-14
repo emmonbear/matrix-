@@ -829,3 +829,40 @@ TEST(Inverse, TestNormal30) {
 
   EXPECT_TRUE(res == expected);
 }
+
+TEST(Inverse, TestFail1) {
+  std::string example{"{{47.808300, 57.148700, 48.518100}, {9.230100, -56.311400, 94.235300}}"};
+  S21Matrix matrix_1{example};
+  
+  EXPECT_ANY_THROW(matrix_1.InverseMatrix(););
+}
+
+TEST(Inverse, InverseMatrixThrowsIfNotSquare) {
+  S21Matrix nonSquareMatrix(2, 3);
+  
+  try {
+    nonSquareMatrix.InverseMatrix();
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_EQ(e.what(), std::string("Matrix must be square to calculate inverse matrix."));
+  } catch (...) {
+    FAIL() << "Expected std::invalid_argument";
+  }
+}
+
+TEST(Inverse, InverseMatrixThrowsIfDeterminantZero) {
+  S21Matrix singularMatrix(2, 2);
+  singularMatrix(0, 0) = 1;
+  singularMatrix(0, 1) = 2;
+  singularMatrix(1, 0) = 2;
+  singularMatrix(1, 1) = 4;
+  
+  try {
+    singularMatrix.InverseMatrix();
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_EQ(e.what(), std::string("The determinant must not be equal to zero."));
+  } catch (...) {
+    FAIL() << "Expected std::invalid_argument";
+  }
+}

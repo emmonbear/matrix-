@@ -428,3 +428,10 @@ TEST(Determinant, TestNormal20) {
 
   EXPECT_TRUE(std::abs(res - expected) < 1e-7);
 }
+
+TEST(Determinant, TestFail1) {
+  std::string example{"{{47.808300, 57.148700, 48.518100}, {9.230100, -56.311400, 94.235300}}"};
+  S21Matrix matrix_1{example};
+  
+  EXPECT_ANY_THROW(matrix_1.Determinant(););
+}
